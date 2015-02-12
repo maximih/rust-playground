@@ -1,6 +1,6 @@
 use std::os;
 use std::num::{Int, from_str_radix, cast}; 
-use std::io::net::ip::IpAddr;
+use std::old_io::net::ip::IpAddr;
 
 fn ipv4_to_int(ip: [u8; 4]) -> u32 {
     (0..4).fold(0, |sum, x| {sum + (256.pow(ip.len() - x - 1) * (ip[x] as u32))})
@@ -27,28 +27,27 @@ fn main() {
         println!("Usage: ./{} IP_ADDRESS", s[0]);
         return;
     };
-    let input: Option<IpAddr> = (s[1].as_slice().trim()).parse();
+    let input = (&s[1].trim()).parse();
     match input {
-        Some(IpAddr::Ipv4Addr(a, b, c, d)) => {
+        Ok(IpAddr::Ipv4Addr(a, b, c, d)) => {
             output.ipv4 = input.unwrap();
             output.int32 = ipv4_to_int([a, b, c, d]);       
         },
-        Some(IpAddr::Ipv6Addr(..)) => {
+        Ok(IpAddr::Ipv6Addr(..)) => {
             println!("Conversion not supported for IPv6 addresses!");
             return;
         },
-        None  => {
-            let input: Option<u32> = (s[1].as_slice().trim()).parse();
+        Err(_) => {
+            let input = (&s[1].trim()).parse();
             match input {
-                Some(ip_int) => {
+                Ok(ip_int) => {
                     output.ipv4 = int_to_ipv4(ip_int);
                     output.int32 = input.unwrap();
                 },
-                None => {
-                    let input =  s[1].as_slice().trim();
+                Err(_) => {
+                    let input =  &s[1].trim();
                     if input.starts_with("0x") {
-                        let input = input.slice_from(2);
-                        if let Some(x) = from_str_radix(input, 16) {
+                        if let Ok(x) = from_str_radix(&input[2..], 16) {
                             output.ipv4 = int_to_ipv4(x);
                             output.int32 = x;
                         } else {
