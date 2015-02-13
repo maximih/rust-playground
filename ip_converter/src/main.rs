@@ -22,47 +22,48 @@ struct Output {
 
 fn main() {
     let mut output: Output = Output{ipv4: IpAddr::Ipv4Addr(0,0,0,0), int32: 0};
-    let s = os::args(); 
-    if !(s.len() > 1) {
-        println!("Usage: ./{} IP_ADDRESS", s[0]);
-        return;
-    };
-    let input = (&s[1].trim()).parse();
-    match input {
-        Ok(IpAddr::Ipv4Addr(a, b, c, d)) => {
-            output.ipv4 = input.unwrap();
-            output.int32 = ipv4_to_int([a, b, c, d]);       
-        },
-        Ok(IpAddr::Ipv6Addr(..)) => {
-            println!("Conversion not supported for IPv6 addresses!");
-            return;
-        },
-        Err(_) => {
-            let input = (&s[1].trim()).parse();
-            match input {
-                Ok(ip_int) => {
-                    output.ipv4 = int_to_ipv4(ip_int);
-                    output.int32 = input.unwrap();
-                },
-                Err(_) => {
-                    let input =  &s[1].trim();
-                    if input.starts_with("0x") {
-                        if let Ok(x) = from_str_radix(&input[2..], 16) {
-                            output.ipv4 = int_to_ipv4(x);
-                            output.int32 = x;
+    // read input args and take the first 2 (prog name and argument)
+    // and transform it to vector
+    let s: Vec<_> = std::env::args().take(2).collect(); 
+    if s.len() == 2 {
+        let input = s[1].clone().into_string().unwrap();
+        match input.trim().parse() {
+            Ok(IpAddr::Ipv4Addr(a, b, c, d)) => {
+                output.ipv4 = IpAddr::Ipv4Addr(a, b, c, d);
+                output.int32 = ipv4_to_int([a, b, c, d]);       
+            },
+            Ok(IpAddr::Ipv6Addr(..)) => {
+                println!("Conversion not supported for IPv6 addresses!");
+                return;
+            },
+            Err(_) => {
+                match input.trim().parse() {
+                    Ok(ip_int) => {
+                        output.ipv4 = int_to_ipv4(ip_int);
+                        output.int32 = ip_int;
+                    },
+                    Err(_) => {
+                        if input.trim().starts_with("0x") {
+                            if let Ok(x) = from_str_radix(&input[2..], 16) {
+                                output.ipv4 = int_to_ipv4(x);
+                                output.int32 = x;
+                            } else {
+                                println!("Invalid value: 0x{}", input);
+                                return;
+                                }
                         } else {
-                            println!("Invalid value: 0x{}", input);
+                            println!("Unrecognized IP format!");
                             return;
-                            }
-                    } else {
-                        println!("Unrecognized IP format!");
-                        return;
+                        }
                     }
                 }
             }
         }
-    }
-    println!("{}, 0x{:08X}, {}", output.ipv4, output.int32, output.int32)
+        println!("{}, 0x{:08X}, {}", output.ipv4, output.int32, output.int32)
+    } else {
+        println!("Usage: ./{} IP_ADDRESS", s[0].clone().into_string().unwrap());
+        return;
+   }     
 }
 
 
