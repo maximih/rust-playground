@@ -26,7 +26,7 @@ fn main() {
     // and transform it to vector
     let s: Vec<_> = std::env::args().take(2).collect(); 
     if s.len() == 2 {
-        let input = s[1].clone().into_string().unwrap();
+        let input = s[1].clone();
         match input.trim().parse() {
             Ok(IpAddr::Ipv4Addr(a, b, c, d)) => {
                 output.ipv4 = IpAddr::Ipv4Addr(a, b, c, d);
@@ -61,7 +61,7 @@ fn main() {
         }
         println!("{}, 0x{:08X}, {}", output.ipv4, output.int32, output.int32)
     } else {
-        println!("Usage: ./{} IP_ADDRESS", s[0].clone().into_string().unwrap());
+        println!("Usage: ./{} IP_ADDRESS", s[0]);
         return;
    }     
 }
