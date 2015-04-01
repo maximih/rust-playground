@@ -1,9 +1,8 @@
-use std::num::{Int, from_str_radix}; 
 use std::net::{Ipv4Addr, Ipv6Addr};
 
 fn ipv4_to_int(ip: Ipv4Addr) -> u32 {
     let ip_oct = ip.octets();
-    (0..4).fold(0, |sum, x| {sum + (256.pow((ip_oct.len() - x - 1) as u32) * (ip_oct[x] as u32))})
+    (0..4).fold(0, |sum, x| {sum + (256u32.pow((ip_oct.len() - x - 1) as u32) * (ip_oct[x] as u32))})
 }
 
 fn int_to_ipv4(i: u32) -> Ipv4Addr {
@@ -41,7 +40,7 @@ fn main() {
                 },
                 Err(_) => {
                     if input.trim().starts_with("0x") {
-                        if let Ok(x) = from_str_radix(&input[2..], 16) {
+                        if let Ok(x) = u32::from_str_radix(&input[2..], 16) {
                             output.ipv4 = int_to_ipv4(x);
                             output.int32 = x;
                         } else {
