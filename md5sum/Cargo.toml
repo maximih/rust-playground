@@ -1,0 +1,8 @@
+[package]
+name = "md5sum"
+version = "0.1.0"
+authors = ["Maximilian Hristache <mhristache@gmail.com>"]
+
+[dependencies.octavo]
+git = "https://github.com/libOctavo/octavo.git"
+features = ["md5"]
