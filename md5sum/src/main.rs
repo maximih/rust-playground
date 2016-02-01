@@ -25,7 +25,7 @@ fn main() {
         while bytes_read < file_len {
             let curr_read = reader.read(&mut buf).unwrap() as u64;
             md5.update(&buf[0..curr_read as usize]);
-            bytes_read = bytes_read + curr_read;
+            bytes_read += curr_read;
         }
 
         md5.result(&mut result);
