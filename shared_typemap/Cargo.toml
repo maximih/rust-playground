@@ -1,0 +1,8 @@
+[package]
+
+name = "shared_typemap_example"
+version = "0.0.1"
+authors = ["Maximilian Hristache <mhristache@gmail.com>"]
+
+[dependencies]
+typemap = "*"
